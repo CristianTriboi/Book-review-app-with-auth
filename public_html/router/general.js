@@ -58,10 +58,15 @@ public_users.get('/title/:title',function (req, res) {
       .then((books) => books.filter((book) => book.title === title))
       .then((filteredBooks) => res.send(filteredBooks));
 });
+
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn = req.params.isbn;
+  getByISBN(req.params.isbn)
+  .then(
+      result => res.send(result.reviews),
+      error => res.status(error.status).json({message: error.message})
+  );
 });
 
 module.exports.general = public_users;

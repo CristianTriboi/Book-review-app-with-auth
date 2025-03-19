@@ -11,9 +11,14 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
+function getBooks() {
+  return new Promise((resolve, reject) => {
+    resolve(books);
+  });
+}
+
 public_users.get('/',function (req, res) {
-  
-  return res.status(300).json({message: "Yet to be implemented"});
+  getBooks().then((books) => res.send(books));
 });
 
 // Get book details based on ISBN

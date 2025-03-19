@@ -22,10 +22,24 @@ public_users.get('/',function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  
-  return res.status(300).json({message: "Yet to be implemented"});
- });
+function getByISBN(isbn) {
+  return new Promise((resolve, reject) => {
+    let isbnNum = parseInt(isbn);
+    if (books[isbnNum]) {
+      resolve(books[isbnNum]);
+    } else {
+      reject({status:404, message:`ISBN ${isbn} not found`});
+    }
+  })
+}
+
+public_users.get('/isbn/:isbn', function (req, res) {
+  getByISBN(req.params.isbn)
+      .then(
+          result => res.send(result),
+          error => res.status(error.status).json({message: error.message})
+      );
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {

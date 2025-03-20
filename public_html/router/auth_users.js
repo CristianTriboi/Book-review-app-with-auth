@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
@@ -63,6 +64,31 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
           console.log("after ",books[isbn])
         }
         return res.status(300).json({message: "Successfully updated"});
+      }
+      else {
+        // Send an error response
+        res.status(404).json({message: 'Book not found'});
+      }
+    }
+);
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+      let isbn = req.params.isbn;
+
+      // get the username
+      let session= req.session;
+      let username= session && session.authorization['username'] ? session.authorization['username'] : null;
+      // Check if the ISBN exists in the books object
+      if (isbn in books) {
+        // Check if the user has already posted a review for the book
+        if (username in books[isbn].reviews) {
+          // deleting the existing review
+          delete books[isbn].reviews[username] ;
+          res.status(200).json({ message: "Review deleted successfully" });
+        } else {
+          res.status(404).json({ message: "Review not found" });
+        }
+
       }
       else {
         // Send an error response
